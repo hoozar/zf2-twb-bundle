@@ -12,7 +12,8 @@ class TwbBundleFormRow extends \Zend\Form\View\Helper\FormRow {
     /**
      * @var string
      */
-    private static $horizontalLayoutFormat = '%s<div class="%s">%s</div>';
+    private static $horizontalLayoutFormat = '%s%s<div class="%s">%s</div>%s';
+    private static $horizontalLayoutFormatMin = '%s %s %s %s';
 
     /**
      * @var string
@@ -83,6 +84,11 @@ class TwbBundleFormRow extends \Zend\Form\View\Helper\FormRow {
             $sRowClass .= ' col-' . $sColumSize;
         }
 
+        //Form row class
+        if ($ssRowClass = $oElement->getOption('rowClass')) {
+            $sRowClass .= ' ' . $ssRowClass;
+        }
+
         //Render element
         $sElementContent = $this->renderElement($oElement);
 
@@ -90,8 +96,14 @@ class TwbBundleFormRow extends \Zend\Form\View\Helper\FormRow {
         if (in_array($sElementType, array('checkbox')) && $sLayout !== \TwbBundle\Form\View\Helper\TwbBundleForm::LAYOUT_HORIZONTAL) {
             return $sElementContent . PHP_EOL;
         }
+        /*
         if (($sElementType === 'submit' || $sElementType === 'button' || $sElementType === 'reset') && $sLayout === \TwbBundle\Form\View\Helper\TwbBundleForm::LAYOUT_INLINE
         ) {
+            return $sElementContent . PHP_EOL;
+        }
+        */
+
+        if ($sElementType === 'submit' || $sElementType === 'button' || $sElementType === 'reset') {
             return $sElementContent . PHP_EOL;
         }
 
@@ -213,16 +225,19 @@ class TwbBundleFormRow extends \Zend\Form\View\Helper\FormRow {
                     $sClass .= ' col-' . $sColumSize;
                 }
 
-                // Checkbox elements are a  special case. They don't need to render a label again
-                if ($sElementType === 'checkbox') {
-                    return sprintf(
-                            self::$horizontalLayoutFormat, '', $sClass, $sElementContent
-                    );
+                if (strlen(trim($sClass)) > 0) {
+                    // Checkbox elements are a  special case. They don't need to render a label again
+                    if ($sElementType === 'checkbox') {
+                        return sprintf(self::$horizontalLayoutFormat, '', $oElement->getOption('html-before-element'), $sClass, $sElementContent, $oElement->getOption('html-after-element') );
+                    }
+                    return sprintf(self::$horizontalLayoutFormat, $sLabelOpen . $sLabelContent . $sLabelClose, $oElement->getOption('html-before-element'), $sClass, $sElementContent, $oElement->getOption('html-after-element'));
+                } else {
+                    // Checkbox elements are a  special case. They don't need to render a label again
+                    if ($sElementType === 'checkbox') {
+                        return sprintf(self::$horizontalLayoutFormatMin, '', $oElement->getOption('html-before-element'), $sElementContent, $oElement->getOption('html-after-element') );
+                    }
+                    return sprintf(self::$horizontalLayoutFormatMin, $sLabelOpen . $sLabelContent . $sLabelClose, $oElement->getOption('html-before-element'), $sElementContent, $oElement->getOption('html-after-element'));
                 }
-
-                return sprintf(
-                        self::$horizontalLayoutFormat, $sLabelOpen . $sLabelContent . $sLabelClose, $sClass, $sElementContent
-                );
 
             default:
                 throw new \DomainException('Layout "' . $sLayout . '" is not valid');
