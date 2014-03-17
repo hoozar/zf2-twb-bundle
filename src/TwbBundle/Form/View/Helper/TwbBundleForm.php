@@ -42,6 +42,7 @@ class TwbBundleForm extends \Zend\Form\View\Helper\Form
     	//Set form layout class
     	if(is_string($sFormLayout)){
     		$sLayoutClass = 'form-'.$sFormLayout;
+    		$sLayoutClass = '';
     		if ($sFormClass = $oForm->getAttribute('class')) {
                 if (!preg_match('/(\s|^)' . preg_quote($sLayoutClass, '/') . '(\s|$)/', $sFormClass)) {
                     $oForm->setAttribute('class', trim($sFormClass . ' ' . $sLayoutClass));
