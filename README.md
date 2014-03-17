@@ -2,6 +2,8 @@ TwbBundle, v2.0
 =====================
 (Twitter Bootstrap v3.*)
 
+fork from neilime work, some changes made to TwbBundle\Form\View\Helper\TwbBundleFormRow and TwbBundle\Form\View\Helper\TwbBundleForm classess to beter work with my project
+
 Work in progress to supports Twitter Bootstrap v3.*
 
 [![Build Status](https://travis-ci.org/neilime/zf2-twb-bundle.png?branch=master)](https://travis-ci.org/neilime/zf2-twb-bundle)
