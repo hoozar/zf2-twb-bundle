@@ -3,12 +3,17 @@
     "type": "library",
     "description": "Zend Framework 2 module for easy integration of Twitter Bootstrap",
     "keywords": ["Zend Framework 2","Twitter Bootstrap","bundle"],
-    "homepage": "http://hoozar.github.io/zf2-twb-bundle/",
+    "homepage": "https://github.com/hoozar/zf2-twb-bundle",
     "license": "MIT",
     "minimum-stability" : "stable",
     "authors": [
         {
             "name": "Neilime",
+            "homepage": "https://github.com/neilime",
+            "role": "Developer"
+        },
+        {
+            "name": "Hoozar",
             "homepage": "https://github.com/hoozar",
             "role": "Developer"
         }
