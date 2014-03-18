@@ -7,12 +7,12 @@ class TwbBundleFormCollection extends \Zend\Form\View\Helper\FormCollection {
     /**
      * @var string
      */
-    private static $legendFormat = '<legend%s>%s</legend>';
+    private static $legendFormat = '<h3%s>%s</h3>';
 
     /**
      * @var string
      */
-    private static $fieldsetFormat = '<fieldset%s>%s</fieldset>';
+    private static $fieldsetFormat = '<section%s>%s</section>';
 
     /**
      * Attributes valid for the tag represented by this helper
@@ -60,6 +60,10 @@ class TwbBundleFormCollection extends \Zend\Form\View\Helper\FormCollection {
         }
 
         if ($bShouldWrap) {
+            $attr = $oElement->getAttributes();
+            if (array_key_exists('fieldswrap', $attr)) {
+                $sMarkup = sprintf($attr['fieldswrap'], $sMarkup);
+            }
             if (($sLabel = $oElement->getLabel())) {
                 if (null !== ($oTranslator = $this->getTranslator())) {
                     $sLabel = $oTranslator->translate($sLabel, $this->getTranslatorTextDomain());
@@ -72,7 +76,8 @@ class TwbBundleFormCollection extends \Zend\Form\View\Helper\FormCollection {
 
             //Set form layout class
             if ($sElementLayout) {
-                $sLayoutClass = 'form-' . $sElementLayout;
+                //$sLayoutClass = 'form-' . $sElementLayout;
+                $sLayoutClass = '';
                 if ($sElementClass = $oElement->getAttribute('class')) {
                     if (!preg_match('/(\s|^)' . preg_quote($sLayoutClass, '/') . '(\s|$)/', $sElementClass)) {
                         $oElement->setAttribute('class', trim($sElementClass . ' ' . $sLayoutClass));
