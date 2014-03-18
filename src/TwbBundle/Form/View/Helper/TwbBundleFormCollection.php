@@ -87,8 +87,11 @@ class TwbBundleFormCollection extends \Zend\Form\View\Helper\FormCollection {
                 }
             }
 
+            //$sMarkup = sprintf(
+            //    self::$fieldsetFormat, ($sAttributes = $this->createAttributesString($oElement->getAttributes())) ? ' ' . $sAttributes : '', $sMarkup
+            //);
             $sMarkup = sprintf(
-                    self::$fieldsetFormat, ($sAttributes = $this->createAttributesString($oElement->getAttributes())) ? ' ' . $sAttributes : '', $sMarkup
+                ($ffs = $oElement->getOption('fieldset-format-string')) ? $ffs : self::$fieldsetFormat, ($sAttributes = $this->createAttributesString($oElement->getAttributes())) ? ' ' . $sAttributes : '', $sMarkup
             );
         }
         return $sMarkup;
