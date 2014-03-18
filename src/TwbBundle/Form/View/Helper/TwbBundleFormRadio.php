@@ -8,12 +8,12 @@ class TwbBundleFormRadio extends \Zend\Form\View\Helper\FormRadio {
      * Separator for checkbox elements
      * @var string
      */
-    protected $separator = '</div><div class="radio">';
+    protected $separator = '</div><div class="%s">';
 
     /**
      * @var string
      */
-    private static $checkboxFormat = '<div class="radio">%s</div>';
+    private static $checkboxFormat = '<div class="%s">%s</div>';
 
     /**
      * @see \Zend\Form\View\Helper\FormRadio::render()
@@ -28,7 +28,7 @@ class TwbBundleFormRadio extends \Zend\Form\View\Helper\FormRadio {
             $this->separator = $sSeparator;
             return $sReturn;
         }
-        return sprintf(self::$checkboxFormat, parent::render($oElement));
+        return sprintf(self::$checkboxFormat, $oElement->getAttribute('wrapperClass'), parent::render($oElement));
     }
 
     /**
@@ -92,17 +92,30 @@ class TwbBundleFormRadio extends \Zend\Form\View\Helper\FormRadio {
                 if (null !== ($oTranslator = $this->getTranslator())) {
                     $sLabel = $oTranslator->translate($sLabel, $this->getTranslatorTextDomain());
                 }
+
+                $optAdd = $oElement->getOption('option_addition');
+                $optAddVal = $oElement->getOption('option_addition_with_value');
+                $optAddString = '';
+                if ($optAddVal) {
+                    $optAddString = sprintf($optAddVal, $key);
+                } else {
+                    if ($optAdd) {
+                        $optAddString = $optAdd;
+                    } else {
+                        $optAddString = '';
+                    }
+                }
                 switch ($this->getLabelPosition()) {
                     case self::LABEL_PREPEND:
-                        $sOptionMarkup = sprintf($oLabelHelper->openTag($aLabelAttributes) . '%s%s' . $oLabelHelper->closeTag(), $this->getEscapeHtmlHelper()->__invoke($sLabel), $sOptionMarkup);
+                        $sOptionMarkup = sprintf($oLabelHelper->openTag($aLabelAttributes) . '%s%s%s' . $oLabelHelper->closeTag(), $this->getEscapeHtmlHelper()->__invoke($sLabel), $sOptionMarkup, $optAddString);
                         break;
                     case self::LABEL_APPEND:
                     default:
-                        $sOptionMarkup = sprintf($oLabelHelper->openTag($aLabelAttributes) . '%s%s' . $oLabelHelper->closeTag(), $sOptionMarkup, $this->getEscapeHtmlHelper()->__invoke($sLabel));
+                        $sOptionMarkup = sprintf($oLabelHelper->openTag($aLabelAttributes) . '%s%s%s' . $oLabelHelper->closeTag(), $sOptionMarkup, $optAddString, $this->getEscapeHtmlHelper()->__invoke($sLabel));
                         break;
                 }
             }
-            $sMarkup .= ($sMarkup ? $this->getSeparator() : '') . $sOptionMarkup;
+            $sMarkup .= ($sMarkup ? sprintf($this->getSeparator(), $oElement->getAttribute('wrapperClass')) : '') . $sOptionMarkup;
         }
         return $sMarkup;
     }
