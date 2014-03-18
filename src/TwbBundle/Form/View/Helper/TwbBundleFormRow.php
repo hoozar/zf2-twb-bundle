@@ -18,7 +18,7 @@ class TwbBundleFormRow extends \Zend\Form\View\Helper\FormRow {
     /**
      * @var string
      */
-    private static $helpBlockFormat = '<p class="help-block">%s</p>';
+    private static $helpBlockFormat = '<p class="%s">%s</p>';
 
     /**
      * The class that is added to element that have errors
@@ -86,7 +86,11 @@ class TwbBundleFormRow extends \Zend\Form\View\Helper\FormRow {
 
         //Form row class
         if ($ssRowClass = $oElement->getOption('rowClass')) {
-            $sRowClass .= ' ' . $ssRowClass;
+            if (is_array($ssRowClass)) {
+                $sRowClass .= ' ' . implode(' ', $ssRowClass);
+            } else {
+                $sRowClass .= ' ' . $ssRowClass;
+            }
         }
 
         //Render element
@@ -94,6 +98,9 @@ class TwbBundleFormRow extends \Zend\Form\View\Helper\FormRow {
 
         //Render form row
         if (in_array($sElementType, array('checkbox')) && $sLayout !== \TwbBundle\Form\View\Helper\TwbBundleForm::LAYOUT_HORIZONTAL) {
+            if ($oElement->getOption('help-block-outer')) {
+                $sElementContent .= $this->renderHelpBlock($oElement);
+            }
             return $sElementContent . PHP_EOL;
         }
         /*
@@ -104,12 +111,17 @@ class TwbBundleFormRow extends \Zend\Form\View\Helper\FormRow {
         */
 
         if ($sElementType === 'submit' || $sElementType === 'button' || $sElementType === 'reset') {
+            if ($oElement->getOption('help-block-outer')) {
+                $sElementContent .= $this->renderHelpBlock($oElement);
+            }
             return $sElementContent . PHP_EOL;
         }
 
-        return sprintf(
-                        self::$formGroupFormat, $sRowClass, $sElementContent
-                ) . PHP_EOL;
+        $ret = sprintf(self::$formGroupFormat, $sRowClass, $sElementContent);
+        if ($oElement->getOption('help-block-outer')) {
+            $ret .= $this->renderHelpBlock($oElement);
+        }
+        return $ret . PHP_EOL;
     }
 
     /**
@@ -194,14 +206,20 @@ class TwbBundleFormRow extends \Zend\Form\View\Helper\FormRow {
 
                 $sLabelOpen = $oLabelHelper->openTag($oElement->getAttribute('id') ? $oElement : $aLabelAttributes);
                 $sLabelClose = $oLabelHelper->closeTag();
-                $sLabelContent = $this->getEscapeHtmlHelper()->__invoke($sLabelContent);
+                if (! $oElement->getOption('label_no_escape')) {
+                    $sLabelContent = $this->getEscapeHtmlHelper()->__invoke($sLabelContent);
+                }
             }
         }
 
         switch ($sLayout) {
             case null:
             case \TwbBundle\Form\View\Helper\TwbBundleForm::LAYOUT_INLINE:
-                $sElementContent = $sLabelOpen . $sLabelContent . $sLabelClose . $this->getElementHelper()->render($oElement) . $this->renderHelpBlock($oElement);
+                //var_dump('adasdafwegwgrgsdfgvsdfvsdfvb');
+                $sElementContent = $sLabelOpen . $sLabelContent . $sLabelClose . $oElement->getOption('html-before-element') . $this->getElementHelper()->render($oElement) . $oElement->getOption('html-after-element'); //. $this->renderHelpBlock($oElement);
+                if (! $oElement->getOption('help-block-outer')) {
+                    $sElementContent .= $this->renderHelpBlock($oElement);
+                }
 
                 //Render errors
                 if ($this->renderErrors) {
@@ -211,7 +229,10 @@ class TwbBundleFormRow extends \Zend\Form\View\Helper\FormRow {
                 return $sElementContent;
 
             case \TwbBundle\Form\View\Helper\TwbBundleForm::LAYOUT_HORIZONTAL:
-                $sElementContent = $this->getElementHelper()->render($oElement) . $this->renderHelpBlock($oElement);
+                $sElementContent = $this->getElementHelper()->render($oElement);// . $this->renderHelpBlock($oElement);
+                if (! $oElement->getOption('help-block-outer')) {
+                    $sElementContent .= $this->renderHelpBlock($oElement);
+                }
 
                 //Render errors
                 if ($this->renderErrors) {
@@ -251,7 +272,7 @@ class TwbBundleFormRow extends \Zend\Form\View\Helper\FormRow {
      */
     protected function renderHelpBlock(\Zend\Form\ElementInterface $oElement) {
         return ($sHelpBlock = $oElement->getOption('help-block')) ? sprintf(
-                        self::$helpBlockFormat, $this->getEscapeHtmlHelper()->__invoke(($oTranslator = $this->getTranslator()) ? $oTranslator->translate($sHelpBlock, $this->getTranslatorTextDomain()) : $sHelpBlock)
+                        self::$helpBlockFormat, $oElement->getOption('help-block-class'), $this->getEscapeHtmlHelper()->__invoke(($oTranslator = $this->getTranslator()) ? $oTranslator->translate($sHelpBlock, $this->getTranslatorTextDomain()) : $sHelpBlock)
                 ) : '';
     }
 
