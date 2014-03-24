@@ -12,7 +12,7 @@ class TwbBundleFormCollection extends \Zend\Form\View\Helper\FormCollection {
     /**
      * @var string
      */
-    private static $fieldsetFormat = '<section%s>%s</section>';
+    private static $fieldsetFormat = '<fieldset%s>%s</fieldset>';
 
     /**
      * Attributes valid for the tag represented by this helper
