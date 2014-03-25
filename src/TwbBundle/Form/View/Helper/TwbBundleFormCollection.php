@@ -7,7 +7,7 @@ class TwbBundleFormCollection extends \Zend\Form\View\Helper\FormCollection {
     /**
      * @var string
      */
-    private static $legendFormat = '<h3%s>%s</h3>';
+    private static $legendFormat = '<legend%s>%s</legend>';
 
     /**
      * @var string
@@ -69,9 +69,17 @@ class TwbBundleFormCollection extends \Zend\Form\View\Helper\FormCollection {
                     $sLabel = $oTranslator->translate($sLabel, $this->getTranslatorTextDomain());
                 }
 
+                if ( ! ($lf = $oElement->getAttribute('legendFormat')) ) {
+                    $lf = self::$legendFormat;
+                }
+                $sMarkup = sprintf(
+                        $lf, ($sAttributes = $this->createAttributesString($oElement->getLabelAttributes()? : array())) ? ' ' . $sAttributes : '', $this->getEscapeHtmlHelper()->__invoke($sLabel)
+                    ) . $sMarkup;
+                /*
                 $sMarkup = sprintf(
                                 self::$legendFormat, ($sAttributes = $this->createAttributesString($oElement->getLabelAttributes()? : array())) ? ' ' . $sAttributes : '', $this->getEscapeHtmlHelper()->__invoke($sLabel)
                         ) . $sMarkup;
+                */
             }
 
             //Set form layout class
