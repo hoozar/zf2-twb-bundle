@@ -8,6 +8,7 @@ class TwbBundleFormRow extends \Zend\Form\View\Helper\FormRow {
      * @var string
      */
     private static $formGroupFormat = '<div class="form-group %s">%s</div>';
+    private static $formGroupFormatNoDefClass = '<div class="%s">%s</div>';
 
     /**
      * @var string
@@ -117,7 +118,18 @@ class TwbBundleFormRow extends \Zend\Form\View\Helper\FormRow {
             return $sElementContent . PHP_EOL;
         }
 
-        $ret = sprintf(self::$formGroupFormat, $sRowClass, $sElementContent);
+        $fgf = self::$formGroupFormat;
+        $fgfndc = self::$formGroupFormatNoDefClass;
+        if ($a = $oElement->getAttribute('group-id')) {
+            $fgf = sprintf('<div id="%s" class="form-group %%s">%%s</div>', $a);
+            $fgfndc = sprintf('<div id="%s" class="%%s">%%s</div>', $a);
+        }
+        if ($oElement->getOption('no-def-group-class')) {
+            $ret = sprintf($fgfndc, $sRowClass, $sElementContent);
+        } else {
+            $ret = sprintf($fgf, $sRowClass, $sElementContent);
+        }
+
         if ($oElement->getOption('help-block-outer')) {
             $ret .= $this->renderHelpBlock($oElement);
         }
