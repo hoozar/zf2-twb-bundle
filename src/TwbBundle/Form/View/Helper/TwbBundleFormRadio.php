@@ -13,7 +13,7 @@ class TwbBundleFormRadio extends \Zend\Form\View\Helper\FormRadio {
     /**
      * @var string
      */
-    private static $checkboxFormat = '<div class="%s">%s</div>';
+    protected $checkboxFormat = '<div class="%s">%s</div>';
 
     /**
      * @see \Zend\Form\View\Helper\FormRadio::render()
@@ -28,7 +28,18 @@ class TwbBundleFormRadio extends \Zend\Form\View\Helper\FormRadio {
             $this->separator = $sSeparator;
             return $sReturn;
         }
-        return sprintf(self::$checkboxFormat, $oElement->getAttribute('wrapperClass'), parent::render($oElement));
+        $wot = trim($oElement->getAttribute('wrapperOpenTag'));
+        $wct = trim($oElement->getAttribute('wrapperClosingTag'));
+        if ((strlen($wot)>0) && (strlen($wct)>0)) {
+            $this->checkboxFormat = $wot . '%s' . $wct;
+            $this->separator = $wct . $wot;
+        }
+        $noWrap = $oElement->getAttribute('wrapperOmitTag');
+        if ($noWrap) {
+            $this->checkboxFormat = '<span data-to-discard="%s"></span>%s';
+            $this->separator = '';
+        }
+        return sprintf($this->checkboxFormat, $oElement->getAttribute('wrapperClass'), parent::render($oElement));
     }
 
     /**
@@ -114,6 +125,13 @@ class TwbBundleFormRadio extends \Zend\Form\View\Helper\FormRadio {
                         $sOptionMarkup = sprintf($oLabelHelper->openTag($aLabelAttributes) . '%s%s%s' . $oLabelHelper->closeTag(), $sOptionMarkup, $optAddString, $this->getEscapeHtmlHelper()->__invoke($sLabel));
                         break;
                 }
+                // now we are doing field injection.
+                // it's stupid idea, but for now have no other :/
+                if ($oElement->getOption('inject_input_html')) {
+                    if ($oElement->getOption('inject_input_value') == $aOptionspec['value'])
+                    $sOptionMarkup .= $oElement->getOption('inject_input_html');
+                    //$sOptionMarkup .= $this->getInputHelper()->__invoke();
+                };
             }
             $sMarkup .= ($sMarkup ? sprintf($this->getSeparator(), $oElement->getAttribute('wrapperClass')) : '') . $sOptionMarkup;
         }
